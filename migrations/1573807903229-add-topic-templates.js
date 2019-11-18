@@ -30,7 +30,6 @@ module.exports = {
 
 		await Topic.create([
 			{
-				"_id" : ObjectId("5dc53f60b57c64003860bf39"),
 				"updatedAt" : ISODate("2019-11-08T11:02:15.788+0000"),
 				"createdAt" : ISODate("2019-01-15T16:30:09.566+0000"),
 				"name" : "neXboard als Mindmap",
@@ -39,8 +38,8 @@ module.exports = {
 				"__v" : NumberInt(0),
 				"courseId" : templateCourse._id,
 				"position" : NumberInt(1),
-				"isCopyFrom" : ObjectId("5d8c6fafdaeb73001a25ac23"),
 				"hidden" : false,
+				"shareToken": "topic-template-1",
 				"materialIds" : [
 
 				],
@@ -89,9 +88,8 @@ module.exports = {
 						"title" : ""
 					}
 				]
-			}
+			},
 			{
-				"_id" : ObjectId("5dc53f9eb57c64003860bf3b"),
 				"updatedAt" : ISODate("2019-11-08T10:57:22.386+0000"),
 				"createdAt" : ISODate("2019-09-30T09:22:17.966+0000"),
 				"name" : "Story-Telling (Hörspiel-Episoden) mit Beispiel [Arbeitsphase]",
@@ -100,8 +98,8 @@ module.exports = {
 				"__v" : NumberInt(0),
 				"courseId" : templateCourse._id,
 				"position" : NumberInt(6),
-				"isCopyFrom" : ObjectId("5dc2de236f1766002d0891fb"),
 				"hidden" : false,
+				"shareToken": "topic-template-2",
 				"materialIds" : [
 
 				],
@@ -167,9 +165,8 @@ module.exports = {
 						"title" : "Episode 4"
 					}
 				]
-			}
+			},
 			{
-				"_id" : ObjectId("5dc541f71e7b1a0039ff0469"),
 				"updatedAt" : ISODate("2019-11-08T10:51:02.538+0000"),
 				"createdAt" : ISODate("2019-09-30T08:56:04.950+0000"),
 				"name" : "Klimawandel [immersiver Einstieg]",
@@ -178,8 +175,8 @@ module.exports = {
 				"__v" : NumberInt(0),
 				"courseId" : templateCourse._id,
 				"position" : NumberInt(1),
-				"isCopyFrom" : ObjectId("5dc165a2a427aa0031467a40"),
 				"hidden" : false,
+				"shareToken": "topic-template-3",
 				"materialIds" : [
 
 				],
@@ -224,9 +221,8 @@ module.exports = {
 						"title" : ""
 					}
 				]
-			}
+			},
 			{
-				"_id" : ObjectId("5dc542101e7b1a0039ff046b"),
 				"updatedAt" : ISODate("2019-11-08T12:12:30.491+0000"),
 				"createdAt" : ISODate("2019-09-30T08:56:04.950+0000"),
 				"name" : "Klimawandel [Arbeitsphase]",
@@ -235,8 +231,8 @@ module.exports = {
 				"__v" : NumberInt(0),
 				"courseId" : templateCourse._id,
 				"position" : NumberInt(1),
-				"isCopyFrom" : ObjectId("5dc425e7c625d2002c1a1d69"),
 				"hidden" : false,
+				"shareToken": "topic-template-4",
 				"materialIds" : [
 
 				],
@@ -291,9 +287,8 @@ module.exports = {
 						"title" : ""
 					}
 				]
-			}
+			},
 			{
-				"_id" : ObjectId("5dc542391e7b1a0039ff046c"),
 				"updatedAt" : ISODate("2019-11-08T10:23:54.187+0000"),
 				"createdAt" : ISODate("2019-11-06T11:10:06.350+0000"),
 				"name" : "Klimawandel und Demokratie [Arbeits- und Ergebnissicherungsphase]",
@@ -302,8 +297,8 @@ module.exports = {
 				"__v" : NumberInt(0),
 				"courseId" : templateCourse._id,
 				"position" : NumberInt(3),
-				"isCopyFrom" : ObjectId("5dc2aa0ec4b99c002c74328b"),
 				"hidden" : false,
+				"shareToken": "topic-template-5",
 				"materialIds" : [
 
 				],
