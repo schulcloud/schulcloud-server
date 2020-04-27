@@ -1,5 +1,3 @@
-// const rp = require('request-promise-native');
-// const xml2js = require('xml2js-es6-promise');
 const { NotFound } = require('@feathersjs/errors');
 const { error } = require('../../../logger');
 const { ROLES } = require('./constants');
@@ -10,39 +8,46 @@ const logErrorAndThrow = (message, response, ErrorClass = Error) => {
 	throw new ErrorClass(message);
 };
 
-/**
- * creates a url for attendee or moderator to join a meeting.
- * if the meeting does not exist, it will be created if create set true.
- *
- * @returns join url
- * @param {Boolean} create
- */
-const joinMeeting = (
-	server, meetingName, meetingId, userName, role, params, create = false,
-) => server.monitoring
-	.getMeetingInfo(meetingId)
+const createMeeting = async (server, id, name, params) => server.administration
+	.create(name, id, params)
 	.then((meeting = {}) => {
-		const { response } = meeting;
-		// the meeting does not exist, create it...
-		if (utils.isValidNotFoundResponse(response)) {
-			if (create === true) {
-				return server.administration
-					.create(meetingName, meetingId, params);
-			}
-			return logErrorAndThrow('meeting room not found, create missing', response, NotFound);
-		}
-		// the meeting probably already exist, use it...
-		return meeting;
-	})
-	.then((meeting) => {
-		// here we probably have a meeting, add user to the meeting...
 		const { response } = meeting;
 
 		if (!utils.isValidFoundResponse(response)) {
-			const message = 'meeting room creation failed';
-			logErrorAndThrow(message, response);
+			logErrorAndThrow('meeting room creation failed', response);
 		}
+
+		return meeting;
+	});
+
+const ensureMeetingExists = async (server, id, name, params, create = false) => server.monitoring
+	.getMeetingInfo(id)
+	.then((meeting = {}) => {
+		const { response } = meeting;
+
+		if (utils.isValidNotFoundResponse(response)) {
+			if (create) {
+				return createMeeting(server, id, name, params);
+			}
+
+			return logErrorAndThrow('meeting room not found, create missing', response, NotFound);
+		}
+
+		return meeting;
+	});
+
+/**
+ * Create a URL for an attendee or moderator to join a meeting.
+ * If the meeting does not exist, it will be created if create set true.
+ *
+ * @returns join URL
+ */
+exports.joinMeeting = (
+	server, meetingName, meetingId, userName, role, params, create = false,
+) => ensureMeetingExists(server, meetingId, meetingName, params, create)
+	.then(({ response }) => {
 		let secret;
+
 		switch (role) {
 			case ROLES.MODERATOR:
 				if (!Array.isArray(response.moderatorPW) || !response.moderatorPW.length) {
@@ -61,20 +66,21 @@ const joinMeeting = (
 		if (!Array.isArray(response.meetingID) || !response.meetingID.length) {
 			logErrorAndThrow('invalid meetingID', response);
 		}
+
 		return server.administration.join(userName, response.meetingID[0], secret, params);
 	});
-exports.joinMeeting = joinMeeting;
 
 /**
-		 * @param {Server} server
-		 * @param {String} meetingId
-		 * @returns information about a meeting if the meeting exist.
-		 * attention: this may expose sensitive data!
-		 */
+ * @param {Server} server
+ * @param {String} meetingId
+ *
+ * @returns information about a meeting if the meeting exist
+ *
+ * Attention: this may expose sensitive data!
+ */
 exports.getMeetingInfo = (server, meetingId) => server.monitoring
 	.getMeetingInfo(meetingId)
-	.then((meeting = {}) => {
-		const { response } = meeting;
+	.then(({ response } = {}) => {
 		if (utils.isValidFoundResponse(response) || utils.isValidNotFoundResponse(response)) {
 			// valid response with not found or existing meeting
 			return response;

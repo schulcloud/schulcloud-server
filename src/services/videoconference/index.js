@@ -15,17 +15,17 @@ const videoconferenceHooks = require('./hooks');
 const { getUser } = require('../../hooks');
 
 const {
-	joinMeeting,
-	getMeetingInfo,
-} = require('./logic');
-
-const {
 	copyPropertyNameIfIncludedInValuesFromSourceToTarget,
 	isValidNotFoundResponse,
 	isValidFoundResponse,
 } = require('./logic/utils');
 
 const server = require('./logic/server');
+const {
+	joinMeeting,
+	getMeetingInfo,
+} = require('./logic/server-helpers');
+
 const {
 	ROLES,
 	PERMISSIONS,
@@ -506,7 +506,6 @@ class CreateVideoconferenceService {
 		}
 	}
 }
-
 
 module.exports = function setup(app) {
 	app.use('/videoconference', new CreateVideoconferenceService(app));
