@@ -20,7 +20,7 @@ const createMeeting = async (server, id, name, params) => server.administration
 		return meeting;
 	});
 
-const ensureMeetingExists = async (server, id, name, params, create = false) => server.monitoring
+exports.ensureMeetingExists = async (server, id, name, params, create = false) => server.monitoring
 	.getMeetingInfo(id)
 	.then((meeting = {}) => {
 		const { response } = meeting;
@@ -42,33 +42,33 @@ const ensureMeetingExists = async (server, id, name, params, create = false) => 
  *
  * @returns join URL
  */
-exports.joinMeeting = (
-	server, meetingName, meetingId, userName, role, params, create = false,
-) => ensureMeetingExists(server, meetingId, meetingName, params, create)
-	.then(({ response }) => {
-		let secret;
+exports.joinMeeting = async (server, meeting, userName, role, params) => {
+	const { response } = meeting;
 
-		switch (role) {
-			case ROLES.MODERATOR:
-				if (!Array.isArray(response.moderatorPW) || !response.moderatorPW.length) {
-					logErrorAndThrow('invalid moderator credentials', response);
-				}
-				secret = response.moderatorPW[0];
-				break;
-			case ROLES.ATTENDEE:
-			default:
-				if (!Array.isArray(response.attendeePW) || !response.attendeePW.length) {
-					logErrorAndThrow('invalid attendee credentials', response);
-				}
-				secret = response.attendeePW[0];
-		}
+	let secret;
+	switch (role) {
+		case ROLES.MODERATOR:
+			if (!Array.isArray(response.moderatorPW) || !response.moderatorPW.length) {
+				logErrorAndThrow('invalid moderator credentials', response);
+			}
+			secret = response.moderatorPW[0];
+			break;
+		case ROLES.ATTENDEE:
+		default:
+			if (!Array.isArray(response.attendeePW) || !response.attendeePW.length) {
+				logErrorAndThrow('invalid attendee credentials', response);
+			}
+			secret = response.attendeePW[0];
+	}
 
-		if (!Array.isArray(response.meetingID) || !response.meetingID.length) {
-			logErrorAndThrow('invalid meetingID', response);
-		}
+	if (!Array.isArray(response.meetingID) || !response.meetingID.length) {
+		logErrorAndThrow('invalid meetingID', response);
+	}
 
-		return server.administration.join(userName, response.meetingID[0], secret, params);
-	});
+	const [meetingID] = response.meetingID;
+
+	return server.administration.join(userName, meetingID, secret, params);
+};
 
 /**
  * @param {Server} server
