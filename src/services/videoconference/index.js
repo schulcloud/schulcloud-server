@@ -91,10 +91,8 @@ function throwOnValidationErrors(scopeId, scopeName, options = null) {
  */
 async function isSchoolFeatureEnabled(schoolId) {
 	const school = await Schools.findById(schoolId).lean().exec();
-	if (school && school.features
-		&& Array.isArray(school.features)
-		&& school.features.includes(SCHOOL_FEATURES.VIDEOCONFERENCE)) {
-		return true;
+	if (school && school.features && Array.isArray(school.features)) {
+		return school.features.includes(SCHOOL_FEATURES.VIDEOCONFERENCE);
 	}
 	return false;
 }
@@ -437,57 +435,43 @@ class CreateVideoconferenceService {
 		], userPermissionsInScope);
 
 		// TODO if event... check team feature flag, ignore for courses
+		// TODO check whether user "hasJoinPermission"?
 
 		// BUSINESS LOGIC /////////////////////////////////////////////////////////
 
 		try {
-			let joinUrl = null;
-			let videoconferenceMetadata = null;
+			let videoconferenceMetadata;
+
 			const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
 
 			if (hasStartPermission) {
 				videoconferenceMetadata = (await updateAndGetVideoconferenceMetadata(scopeName, scopeId, options))
 					.toObject();
-
-				// todo extend options based on metadata created before
-				const { role, settings } = getSettings(
-					authenticatedUser.id,
-					userPermissionsInScope,
-					videoconferenceMetadata,
-					logoutURL,
-				);
-				joinUrl = await joinMeeting(
-					server,
-					scopeTitle,
-					scopeId,
-					authenticatedUser.fullName,
-					role,
-					settings,
-					true,
-				);
 			} else {
-				// (hasJoinPermission)
 				videoconferenceMetadata = (await getVideoconferenceMetadata(scopeName, scopeId, true));
 				if (videoconferenceMetadata === null) {
 					return new NotFound('ask a moderator to start the videoconference, it\'s not started yet');
 				}
-				const { role, settings } = getSettings(
-					authenticatedUser.id,
-					userPermissionsInScope,
-					videoconferenceMetadata,
-					logoutURL,
-				);
-				// joinMeeting throws, if video conference has not started yet
-				joinUrl = await joinMeeting(
-					server,
-					scopeTitle,
-					scopeId,
-					authenticatedUser.fullName,
-					role,
-					settings,
-					false,
-				);
 			}
+
+			// TODO extend options based on metadata created before
+			const { role, settings } = getSettings(
+				authenticatedUser.id,
+				userPermissionsInScope,
+				videoconferenceMetadata,
+				logoutURL,
+			);
+
+			const joinUrl = await joinMeeting(
+				server,
+				scopeTitle,
+				scopeId,
+				authenticatedUser.fullName,
+				role,
+				settings,
+				hasStartPermission,
+			);
+
 			return createResponse(
 				RESPONSE_STATUS.SUCCESS,
 				STATES.RUNNING,
