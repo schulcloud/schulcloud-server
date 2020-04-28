@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const {
 	BadRequest,
 	Forbidden,
@@ -5,8 +6,9 @@ const {
 	GeneralError,
 	FeathersError,
 } = require('@feathersjs/errors');
-const lodash = require('lodash');
 const { Configuration } = require('@schul-cloud/commons');
+const lodash = require('lodash');
+const jwt = require('jsonwebtoken');
 
 const { SCHOOL_FEATURES } = require('../school/model');
 
@@ -37,6 +39,7 @@ const {
 } = require('./logic/constants');
 
 const CLIENT_HOST = Configuration.get('HOST');
+const SALT = Configuration.get('VIDEOCONFERENCE_SALT');
 
 const VideoconferenceModel = require('./model');
 const { schoolModel: Schools } = require('../school/model');
@@ -252,6 +255,17 @@ function getMeetingSetttings(logoutURL, { everyAttendeJoinsMuted = false }) {
 		lockSettingsDisablePrivateChat: true,
 		logoutURL,
 	};
+
+	// http://docs.bigbluebutton.org/dev/api.html#create
+	// autoStartRecording: ?
+	// record: true
+
+	// http://docs.bigbluebutton.org/dev/api.html#recording-ready-callback-url
+	// meta_bbb-recording-ready-url
+
+	settings.autoStartRecording = true;
+	settings.record = true;
+	settings['meta_bbb-recording-ready-url'] = 'http://dead74ee.ngrok.io/videoconference/recordings';
 
 	if (everyAttendeJoinsMuted) {
 		settings.muteOnStart = true;
@@ -470,12 +484,32 @@ class CreateVideoconferenceService {
 	}
 }
 
+const jwtVerify = promisify(jwt.verify);
+
+class RecordingReadyVideoconferenceService {
+	constructor(app) {
+		this.app = app;
+		this.docs = {};
+	}
+
+	async create(data, params) {
+		const { meeting_id: meetingId, record_id: recordId } = await jwtVerify(data.signed_parameters, SALT);
+
+		console.log('Video ready:', meetingId, recordId);
+
+		return { ok: true };
+	}
+}
+
 module.exports = function setup(app) {
 	app.use('/videoconference', new CreateVideoconferenceService(app));
+	app.use('/videoconference/recordings', new RecordingReadyVideoconferenceService(app));
 	app.use('/videoconference/:scopeName', new GetVideoconferenceService(app));
+
 	const videoConferenceServices = [
 		app.service('/videoconference'),
 		app.service('/videoconference/:scopeName'),
 	];
+
 	videoConferenceServices.forEach((service) => service.hooks(videoconferenceHooks));
 };
