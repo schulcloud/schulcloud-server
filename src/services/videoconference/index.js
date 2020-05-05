@@ -9,6 +9,7 @@ const {
 const { Configuration } = require('@schul-cloud/commons');
 const lodash = require('lodash');
 const jwt = require('jsonwebtoken');
+const request = require('request-promise-native');
 
 const { SCHOOL_FEATURES } = require('../school/model');
 
@@ -227,6 +228,10 @@ function getDefaultModel(scopeName, scopeId) {
 		throw new Error();
 	};
 	return { targetModel: collectionNameFor(scopeName), target: scopeId };
+}
+
+function getCollectionNameForConferenceTargetModel(targetModelName) {
+	// TODO
 }
 
 /**
@@ -550,14 +555,29 @@ class RecordingUploadVideoconferenceService {
 		const upload = app.service('fileStorage/signedUrl');
 		const files = app.service('files');
 
-		const { url, headers } = await upload.create({
-			filename: 'test.webm',
-			fileType: 'video/webm',
+		const fileName = 'test.webm';
+		const fileType = 'video/webm';
+		const parent = undefined;
+
+		const target = await upload.create({ filename: fileName, fileType, parent }, { account: { userId } });
+
+		await request({
+			uri: target.url, method: 'PUT', headers: target.headers, body: data,
+		});
+
+		const file = await files.create({
+			name: fileName,
+			owner: conference.target,
+			refOwnerModel: conference.targetModel,
+			type: fileType,
+			size: data.length,
+			storageFileName: target.header['x-amz-meta-flat-name'],
+			thumbnail: target.header['x-amz-meta-thumbnail'],
+			parent,
 		}, { account: { userId } });
 
-		console.log(url, headers);
+		console.log(file);
 
-		// await files.create({ owner, parent, })
 		// TODO: Write data to fileStorage
 		// TODO: Grant permissions
 		// TODO: Delete recording in BBB
