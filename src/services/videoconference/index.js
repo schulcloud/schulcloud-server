@@ -495,15 +495,68 @@ class RecordingReadyVideoconferenceService {
 	async create(data, params) {
 		const { meeting_id: meetingId, record_id: recordId } = await jwtVerify(data.signed_parameters, SALT);
 
+		const { response } = await server.recording.getRecordings({ recordId });
+		const { recording } = response.recordings[0];
+		const playbacks = recording.map((x) => x.playback[0].format[0]);
+
 		console.log('Video ready:', meetingId, recordId);
+		console.dir(playbacks, { depth: null });
+
+		// TODO: Send AMQP (RabbitMQ) queue message
+
+		// // Connect to the queue
+		// const connection = await amqp.connect(AMQP_URI);
+		// const channel = await connection.createChannel();
+
+		// const payload = {
+		// 	url:
+		// 	'https://testbbb.schul-cloud.dev/playback/presentation/2.0/playback.html?meetingId=c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1588148082352',
+		// 	duration: 10,
+		// 	vid: '1234',
+		// };
+
+		// // Send messages to the queue
+		// const buffer = Buffer.from(JSON.stringify(payload));
+		// await channel.sendToQueue(AMQP_QUEUE, buffer, { persistent: true });
+
+		// // Clean up
+		// await channel.close();
+		// await connection.close();
+
 
 		return { ok: true };
+	}
+}
+
+class RecordingUploadVideoconferenceService {
+	constructor(app) {
+		this.app = app;
+		this.docs = {};
+	}
+
+	async create(data, params) {
+		const { headers, route } = params;
+
+		// Verify the call was sent by the schulcloud-bbb-recorder service
+		const [, token] = headers.authorization.split(' ');
+		await jwtVerify(token, SALT);
+
+		// Fetch videoconference model instance
+		const conference = await VideoconferenceModel.findById(route.id).exec();
+		console.log(conference);
+
+		// TODO: Write data to fileStorage
+		// TODO: Grant permissions
+		// TODO: Delete recording in BBB
+
+		// await writeFile('/tmp/1234.webm', data);
 	}
 }
 
 module.exports = function setup(app) {
 	app.use('/videoconference', new CreateVideoconferenceService(app));
 	app.use('/videoconference/recordings', new RecordingReadyVideoconferenceService(app));
+	app.use('/videoconference/:id/recordings', new RecordingUploadVideoconferenceService(app));
 	app.use('/videoconference/:scopeName', new GetVideoconferenceService(app));
 
 	const videoConferenceServices = [
