@@ -536,6 +536,7 @@ class RecordingUploadVideoconferenceService {
 
 	async create(data, params) {
 		const { headers, route } = params;
+		const { app } = this;
 
 		// Verify the call was sent by the schulcloud-bbb-recorder service
 		const [, token] = headers.authorization.split(' ');
@@ -543,8 +544,20 @@ class RecordingUploadVideoconferenceService {
 
 		// Fetch videoconference model instance
 		const conference = await VideoconferenceModel.findById(route.id).exec();
-		console.log(conference);
 
+		const userId = '0000d231816abba584714c9e';
+
+		const upload = app.service('fileStorage/signedUrl');
+		const files = app.service('files');
+
+		const { url, headers } = await upload.create({
+			filename: 'test.webm',
+			fileType: 'video/webm',
+		}, { account: { userId } });
+
+		console.log(url, headers);
+
+		// await files.create({ owner, parent, })
 		// TODO: Write data to fileStorage
 		// TODO: Grant permissions
 		// TODO: Delete recording in BBB
