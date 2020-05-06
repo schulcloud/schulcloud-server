@@ -264,7 +264,7 @@ async function getVideoconferenceMetadata(scopeName, scopeId, returnAsObject = f
 	return videoconferenceMetadata;
 }
 
-function getMeetingSettings(conference, logoutURL, { everyAttendeJoinsMuted = false }) {
+function getMeetingSettings(conference, logoutURL, { everyAttendeJoinsMuted = false, record = false }) {
 	const settings = {
 		allowStartStopRecording: false,
 		lockSettingsDisablePrivateChat: true,
@@ -278,9 +278,11 @@ function getMeetingSettings(conference, logoutURL, { everyAttendeJoinsMuted = fa
 	// http://docs.bigbluebutton.org/dev/api.html#recording-ready-callback-url
 	// meta_bbb-recording-ready-url
 
-	settings.autoStartRecording = true;
-	settings.record = true;
-	settings['meta_bbb-recording-ready-url'] = `https://…/videoconference/${conference._id}/recording-ready`;
+	if (record) {
+		settings.autoStartRecording = true;
+		settings.record = true;
+		settings['meta_bbb-recording-ready-url'] = `https://…/videoconference/${conference._id}/recording-ready`;
+	}
 
 	if (everyAttendeJoinsMuted) {
 		settings.muteOnStart = true;
