@@ -1,4 +1,5 @@
 const { promisify } = require('util');
+const moment = require('moment');
 const {
 	BadRequest,
 	Forbidden,
@@ -555,13 +556,14 @@ class RecordingUploadVideoconferenceService {
 		// Fetch videoconference model instance
 		const conference = await VideoconferenceModel.findById(route.id).exec();
 
-		const userId = '0000d231816abba584714c9e';
+		const userId = '0000d231816abba584714c9e'; // TODO
 
 		const upload = app.service('fileStorage/signedUrl');
 		const permissions = app.service('fileStorage/permission');
 		const files = app.service('fileStorage');
 
-		const fileName = 'test.webm';
+		const timestamp = moment(conference.createdAt).format('YYYY-MM-DD_HH-mm');
+		const fileName = `${timestamp}.webm`;
 		const fileType = 'video/webm';
 		const parent = undefined;
 
@@ -572,8 +574,8 @@ class RecordingUploadVideoconferenceService {
 			uri: target.url, method: 'PUT', headers: target.headers, body: data,
 		});
 
-		// Create an entry in the "files" collection
-		const file = await files.create({
+		// Create an entry in the "files" collection and permissions
+		await files.create({
 			name: fileName,
 			owner: conference.target,
 			refOwnerModel: getFileOwnerModelFromTargetModelName(conference.targetModel),
