@@ -16,6 +16,7 @@ const { SCHOOL_FEATURES } = require('../school/model');
 
 const videoconferenceHooks = require('./hooks');
 
+const rabbitmq = require('../../utils/rabbitmq');
 const { getUser } = require('../../hooks');
 
 const {
@@ -47,6 +48,8 @@ const VideoconferenceModel = require('./model');
 const { schoolModel: Schools } = require('../school/model');
 
 const { ObjectId } = require('../../helper/compare');
+
+const RECORDER_QUEUE = 'schulcloud-bbb-recording-conversion';
 
 // event ids are from postgres instead of mongo
 function scopeIdMatchesEventId(id) {
@@ -506,38 +509,31 @@ class RecordingReadyVideoconferenceService {
 		const { meeting_id: meetingId, record_id: recordId } = await jwtVerify(data.signed_parameters, SALT);
 
 		const { response } = await server.recording.getRecordings({ recordId });
-		const { recording } = response.recordings[0];
-		const playbacks = recording.map((x) => x.playback[0].format[0]);
 
-		console.log('Video ready:', meetingId, recordId);
-		// console.dir(playbacks, { depth: null });
+		const entries = response.recordings[0].recording;
+		const isPresentation = (pb) => pb.format[0].type[0] === 'presentation';
+		const recording = entries.find(({ playback: [pb] }) => isPresentation(pb));
+		const playback = recording.playback.find(isPresentation).format[0];
 
 		// Update videoconference, store recordId
-		const conference = await VideoconferenceModel.findById(route.id).exec();
+		const conference = await VideoconferenceModel.findByIdAndUpdate(route.id, { recordId }).orFail().exec();
 
-		console.log(conference);
+		// Connect to the message broker
+		const channel = await rabbitmq.createChannel();
 
-		// TODO: Send AMQP (RabbitMQ) queue message
+		// Ensure the queue exists
+		await channel.assertQueue(RECORDER_QUEUE, { durable: true });
 
-		// // Connect to the queue
-		// const connection = await amqp.connect(AMQP_URI);
-		// const channel = await connection.createChannel();
+		// Send message to the queue for exporting the playback to a video
+		const payload = {
+			url: playback.url[0],
+			duration: Math.ceil((recording.endTime[0] - recording.startTime[0]) / 1000),
+			vid: conference.id,
+		};
+		const buffer = Buffer.from(JSON.stringify(payload));
+		await channel.sendToQueue(RECORDER_QUEUE, buffer, { persistent: true });
 
-		// const payload = {
-		// 	url:
-		// 	'https://testbbb.schul-cloud.dev/playback/presentation/2.0/playback.html?meetingId=c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1588148082352',
-		// 	duration: 10,
-		// 	vid: '1234',
-		// };
-
-		// // Send messages to the queue
-		// const buffer = Buffer.from(JSON.stringify(payload));
-		// await channel.sendToQueue(AMQP_QUEUE, buffer, { persistent: true });
-
-		// // Clean up
-		// await channel.close();
-		// await connection.close();
-
+		await channel.close();
 
 		return { ok: true };
 	}

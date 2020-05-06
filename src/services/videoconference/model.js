@@ -40,6 +40,13 @@ const videoconferenceSchema = new Schema({
 			default: false,
 			required: true,
 		},
+		record: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	recordId: {
+		type: String,
 	},
 }, {
 	timestamps: true,
