@@ -260,7 +260,7 @@ async function getVideoconferenceMetadata(scopeName, scopeId, returnAsObject = f
 	return videoconferenceMetadata;
 }
 
-function getMeetingSetttings(logoutURL, { everyAttendeJoinsMuted = false }) {
+function getMeetingSettings(conference, logoutURL, { everyAttendeJoinsMuted = false }) {
 	const settings = {
 		allowStartStopRecording: false,
 		lockSettingsDisablePrivateChat: true,
@@ -276,7 +276,7 @@ function getMeetingSetttings(logoutURL, { everyAttendeJoinsMuted = false }) {
 
 	settings.autoStartRecording = true;
 	settings.record = true;
-	settings['meta_bbb-recording-ready-url'] = 'http://dead74ee.ngrok.io/videoconference/recordings';
+	settings['meta_bbb-recording-ready-url'] = `https://…/videoconference/${conference._id}/recording-ready`;
 
 	if (everyAttendeJoinsMuted) {
 		settings.muteOnStart = true;
@@ -332,16 +332,14 @@ function getJoinRole(userPermissions, { everybodyJoinsAsModerator = false }) {
  */
 async function updateAndGetVideoconferenceMetadata(scopeName, scopeId, options) {
 	const modelDefaults = getDefaultModel(scopeName, scopeId);
-	let videoconferenceSettings = await getVideoconferenceMetadata(scopeName, scopeId);
-	if (videoconferenceSettings === null) {
-		videoconferenceSettings = await new VideoconferenceModel({
-			...modelDefaults,
-		});
+	let conference = await getVideoconferenceMetadata(scopeName, scopeId);
+	if (conference === null) {
+		conference = await new VideoconferenceModel({ ...modelDefaults });
 	}
 	const validOptions = getValidOptions(options);
-	Object.assign(videoconferenceSettings.options, validOptions);
-	await videoconferenceSettings.save();
-	return videoconferenceSettings;
+	Object.assign(conference.options, validOptions);
+	await conference.save();
+	return conference;
 }
 
 class GetVideoconferenceService {
@@ -450,25 +448,25 @@ class CreateVideoconferenceService {
 		// BUSINESS LOGIC /////////////////////////////////////////////////////////
 
 		try {
-			let videoconferenceMetadata;
+			let conference;
 
 			const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
 
 			if (hasStartPermission) {
-				videoconferenceMetadata = (await updateAndGetVideoconferenceMetadata(scopeName, scopeId, options))
+				conference = (await updateAndGetVideoconferenceMetadata(scopeName, scopeId, options))
 					.toObject();
 			} else {
-				videoconferenceMetadata = (await getVideoconferenceMetadata(scopeName, scopeId, true));
-				if (videoconferenceMetadata === null) {
+				conference = (await getVideoconferenceMetadata(scopeName, scopeId, true));
+				if (conference === null) {
 					return new NotFound('ask a moderator to start the videoconference, it\'s not started yet');
 				}
 			}
 
-			const { options: conferenceOptions } = videoconferenceMetadata;
+			const { options: conferenceOptions } = conference;
 			const userID = authenticatedUser.id;
 
 			// Get meeting info, create one if it does not exist and the user has sufficient privileges.
-			const meetingSettings = getMeetingSetttings(logoutURL, conferenceOptions);
+			const meetingSettings = getMeetingSettings(conference, logoutURL, conferenceOptions);
 			const meeting = await ensureMeetingExists(server, scopeId, scopeTitle, meetingSettings, hasStartPermission);
 
 			// Join the meeting.
@@ -480,7 +478,7 @@ class CreateVideoconferenceService {
 				RESPONSE_STATUS.SUCCESS,
 				STATES.RUNNING,
 				userPermissionsInScope,
-				hasStartPermission ? videoconferenceMetadata.options : {},
+				hasStartPermission ? conference.options : {},
 				joinUrl,
 			);
 		} catch (error) {
@@ -504,6 +502,7 @@ class RecordingReadyVideoconferenceService {
 	}
 
 	async create(data, params) {
+		const { route } = params;
 		const { meeting_id: meetingId, record_id: recordId } = await jwtVerify(data.signed_parameters, SALT);
 
 		const { response } = await server.recording.getRecordings({ recordId });
@@ -511,7 +510,12 @@ class RecordingReadyVideoconferenceService {
 		const playbacks = recording.map((x) => x.playback[0].format[0]);
 
 		console.log('Video ready:', meetingId, recordId);
-		console.dir(playbacks, { depth: null });
+		// console.dir(playbacks, { depth: null });
+
+		// Update videoconference, store recordId
+		const conference = await VideoconferenceModel.findById(route.id).exec();
+
+		console.log(conference);
 
 		// TODO: Send AMQP (RabbitMQ) queue message
 
@@ -559,7 +563,6 @@ class RecordingUploadVideoconferenceService {
 		const userId = '0000d231816abba584714c9e'; // TODO
 
 		const upload = app.service('fileStorage/signedUrl');
-		const permissions = app.service('fileStorage/permission');
 		const files = app.service('fileStorage');
 
 		const timestamp = moment(conference.createdAt).format('YYYY-MM-DD_HH-mm');
@@ -586,13 +589,14 @@ class RecordingUploadVideoconferenceService {
 			parent,
 		}, { account: { userId } });
 
-		// TODO: Delete recording in BBB
+		// Delete recording in BBB
+		await server.recording.deleteRecordings(conference.recordId);
 	}
 }
 
 module.exports = function setup(app) {
 	app.use('/videoconference', new CreateVideoconferenceService(app));
-	app.use('/videoconference/recordings', new RecordingReadyVideoconferenceService(app));
+	app.use('/videoconference/:id/recording-ready', new RecordingReadyVideoconferenceService(app));
 	app.use('/videoconference/:id/recordings', new RecordingUploadVideoconferenceService(app));
 	app.use('/videoconference/:scopeName', new GetVideoconferenceService(app));
 
