@@ -334,7 +334,7 @@ function getJoinRole(userPermissions, { everybodyJoinsAsModerator = false }) {
  * @param {String} scopeId
  * @param {*} options
  */
-async function updateAndGetVideoconferenceMetadata(scopeName, scopeId, options) {
+async function updateAndGetVideoconferenceMetadata(scopeName, scopeId, ownerId, options) {
 	const modelDefaults = getDefaultModel(scopeName, scopeId);
 	let conference = await getVideoconferenceMetadata(scopeName, scopeId);
 	if (conference === null) {
@@ -342,6 +342,7 @@ async function updateAndGetVideoconferenceMetadata(scopeName, scopeId, options) 
 	}
 	const validOptions = getValidOptions(options);
 	Object.assign(conference.options, validOptions);
+	conference.owner = ownerId
 	await conference.save();
 	return conference;
 }
@@ -457,8 +458,9 @@ class CreateVideoconferenceService {
 			const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
 
 			if (hasStartPermission) {
-				conference = (await updateAndGetVideoconferenceMetadata(scopeName, scopeId, options))
-					.toObject();
+				conference = (
+					await updateAndGetVideoconferenceMetadata(scopeName, scopeId, authenticatedUser._id, options)
+				).toObject();
 			} else {
 				conference = (await getVideoconferenceMetadata(scopeName, scopeId, true));
 				if (conference === null) {
@@ -557,7 +559,8 @@ class RecordingUploadVideoconferenceService {
 		// Fetch videoconference model instance
 		const conference = await VideoconferenceModel.findById(route.id).exec();
 
-		const userId = '0000d231816abba584714c9e'; // TODO
+		// The recording belongs to the last person to start the videoconference
+		const userId = conference.owner;
 
 		const upload = app.service('fileStorage/signedUrl');
 		const files = app.service('fileStorage');
