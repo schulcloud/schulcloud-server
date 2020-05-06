@@ -16,6 +16,7 @@ const { SCHOOL_FEATURES } = require('../school/model');
 
 const videoconferenceHooks = require('./hooks');
 
+const logger = require('../../logger');
 const rabbitmq = require('../../utils/rabbitmq');
 const { getUser } = require('../../hooks');
 
@@ -586,7 +587,17 @@ class RecordingUploadVideoconferenceService {
 		}, { account: { userId } });
 
 		// Delete recording in BBB
-		await server.recording.deleteRecordings(conference.recordId);
+		const { response } = await server.recording.deleteRecordings(conference.recordId);
+
+		if (!isValidFoundResponse(response)) {
+			// Recordings that cannot be deleted immediately should be cleaned
+			// up by a periodic job. Therefore, we avoid re-recording the video
+			// and only log an error here instead of making the request fail.
+			logger.error({
+				message: `Could not delete BBB recording ${conference.recordId}`,
+				response,
+			});
+		}
 	}
 }
 
