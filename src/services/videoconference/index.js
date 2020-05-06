@@ -230,8 +230,13 @@ function getDefaultModel(scopeName, scopeId) {
 	return { targetModel: collectionNameFor(scopeName), target: scopeId };
 }
 
-function getCollectionNameForConferenceTargetModel(targetModelName) {
-	// TODO
+/**
+ * The videoconference "targetModel" values do not match the names used in file "refOwnerModel".
+ * Hence we need to perform a mapping here to make them compatible.
+ */
+function getFileOwnerModelFromTargetModelName(targetModelName) {
+	if (targetModelName === 'courses') return 'course';
+	return targetModelName;
 }
 
 /**
@@ -553,22 +558,25 @@ class RecordingUploadVideoconferenceService {
 		const userId = '0000d231816abba584714c9e';
 
 		const upload = app.service('fileStorage/signedUrl');
-		const files = app.service('files');
+		const permissions = app.service('fileStorage/permission');
+		const files = app.service('fileStorage');
 
 		const fileName = 'test.webm';
 		const fileType = 'video/webm';
 		const parent = undefined;
 
+		// Upload the file to the storage provider via a signed URL
 		const target = await upload.create({ filename: fileName, fileType, parent }, { account: { userId } });
 
 		await request({
 			uri: target.url, method: 'PUT', headers: target.headers, body: data,
 		});
 
+		// Create an entry in the "files" collection
 		const file = await files.create({
 			name: fileName,
 			owner: conference.target,
-			refOwnerModel: conference.targetModel,
+			refOwnerModel: getFileOwnerModelFromTargetModelName(conference.targetModel),
 			type: fileType,
 			size: data.length,
 			storageFileName: target.header['x-amz-meta-flat-name'],
@@ -576,13 +584,7 @@ class RecordingUploadVideoconferenceService {
 			parent,
 		}, { account: { userId } });
 
-		console.log(file);
-
-		// TODO: Write data to fileStorage
-		// TODO: Grant permissions
 		// TODO: Delete recording in BBB
-
-		// await writeFile('/tmp/1234.webm', data);
 	}
 }
 
