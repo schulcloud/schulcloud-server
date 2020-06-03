@@ -1,4 +1,5 @@
 const express = require('@feathersjs/express');
+const helmet = require('helmet');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
 const apiMetrics = require('prometheus-api-metrics');
@@ -35,6 +36,19 @@ const app = express(feathers());
 
 const config = configuration();
 app.configure(config);
+app.use(helmet({
+	frameguard: false,
+	dnsPrefetchControl: { allow: false },
+	hidePoweredBy: true,
+	hsts: {
+		maxAge: 60*60*24*30*6, // ~6 months
+		includeSubDomains: true,
+	},
+	ieNoOpen: true,
+	noSniff: true,
+	xssFilter: {},
+}));
+// app.use(helmet());
 
 const metricsOptions = {};
 if (METRICS_PATH) {
