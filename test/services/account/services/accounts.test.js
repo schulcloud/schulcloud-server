@@ -180,13 +180,19 @@ describe('Account Service', () => {
 	});
 
 	describe('PATCH route', () => {
-		it('should not override userIds', async () => {
+		it('should not override systemIds and userIds', async () => {
 			const accountDetails = {
 				username: 'some@user.de',
 				password: 'ca4t9fsfr3dsd',
 				userId: new ObjectId(),
 			};
 			const account = await accountService.create(accountDetails);
+			try {
+				await accountService.patch(account._id, { systemId: new ObjectId() });
+				throw new Error('This should not happen.');
+			} catch (exception) {
+				assert.equal(exception.code, 403);
+			}
 			try {
 				await accountService.patch(account._id, { userId: new ObjectId() });
 				throw new Error('This should not happen.');
