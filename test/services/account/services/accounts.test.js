@@ -69,7 +69,7 @@ describe('Account Service', () => {
 			await userService.remove(user._id);
 		});
 
-		it('should fail if the account already exists', async () => {
+		it('should fail if the username already exists', async () => {
 			const accountDetails = {
 				username: `max${Date.now()}@mHuEsLtIeXrmann.de`,
 				password: 'ca4t9fsfr3dsd',
@@ -78,10 +78,12 @@ describe('Account Service', () => {
 			};
 			const account = await accountService.create(accountDetails);
 
+			let createdUser;
 			try {
 				await new Promise((resolve, reject) => {
 					accountService.create(accountDetails)
-						.then(() => {
+						.then((res) => {
+							createdUser = res;
 							reject(new Error('This call should fail because the user already exists'));
 						})
 						.catch((err) => {
@@ -91,6 +93,41 @@ describe('Account Service', () => {
 				});
 			} finally {
 				await accountService.remove(account._id);
+				if(createdUser) {
+					await accountService.remove(createdUser._id);
+				}
+			}
+		});
+
+		it('should fail if the userId already exists', async () => {
+			const accountDetails = {
+				username: `max${Date.now()}@mHuEsLtIeXrmann.de`,
+				password: 'ca4t9fsfr3dsd',
+				userId: new ObjectId(),
+
+			};
+			const account = await accountService.create(accountDetails);
+			accountDetails.username = `max2${Date.now()}@mHuEsLtIeXrmann.de`;
+			accountDetails.systemId = null;
+
+			let createdUser;
+			try {
+				await new Promise((resolve, reject) => {
+					accountService.create(accountDetails)
+						.then((res) => {
+							createdUser = res;
+							reject(new Error('This call should fail because the userId already exists'));
+						})
+						.catch((err) => {
+							expect(err.message).to.equal('Der Account existiert bereits!');
+							resolve();
+						});
+				});
+			} finally {
+				await accountService.remove(account._id);
+				if(createdUser) {
+					await accountService.remove(createdUser._id);
+				}
 			}
 		});
 
@@ -108,9 +145,11 @@ describe('Account Service', () => {
 				userId: new ObjectId(),
 			};
 
+			let createdUser;
 			await new Promise((resolve, reject) => {
 				accountService.create(newAccount)
-					.then(() => {
+					.then((res) => {
+						createdUser = res;
 						reject(new Error('This call should fail because '
                         + 'of an already existing user with the same username'));
 					})
@@ -121,6 +160,9 @@ describe('Account Service', () => {
 			});
 
 			await accountService.remove(existingAccount._id);
+			if(createdUser) {
+				await accountService.remove(createdUser._id);
+			}
 		});
 
 		it('should convert the username to lowercase and trim whitespace', async () => {
