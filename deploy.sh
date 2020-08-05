@@ -154,14 +154,13 @@ then
 	# and deploy to according hotfix environment
 	TEAM="$(cut -d'/' -f2 <<< $TRAVIS_BRANCH)"
 	if [[ "$TEAM" -gt 0 && "$TEAM" -lt 8 ]]; then
-		echo "Event detected on branch hotfix/$TEAM/... . Attempting to deploy to hotfix environment $TEAM..."
+    	echo "Event detected on branch hotfix/$TEAM/... . Attempting to deploy to hotfix environment $TEAM..."
 		buildandpush
 		deploytohotfix $TEAM
 		inform_hotfix $TEAM
 	else
 		echo "Event detected on branch hotfix*. However, branch name pattern does not match requirements to deploy. Expected hotfix/<team_number>/XX.XX.XX but got $TRAVIS_BRANCH"
 	fi
-
 else
 	# If no condition is met, nothing will be deployed.
 	echo "Event detected which does not meet any conditions. Deployment will be skipped."
