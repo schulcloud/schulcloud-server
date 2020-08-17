@@ -1,9 +1,32 @@
+/* eslint-disable max-len */
 const { newsPermissions } = require('../repo/db/news.schema');
 
 class NewsUc {
 	constructor(app) {
 		this.newsRepo = app.service('newsRepo');
 		// 1 Could be also achieved with mixins!
+		/*
+			to discuss in editor we have embedded permissions
+			fist we implemented a wrapper permission services that can put to every services and setup him self around it
+		 	put permission hooks, deselections of permission keys
+		 	and full supported permission editing around the services.
+
+			It work well but after some reviews we come to the solution that we can put the request scope
+			as method to service class.
+			The second we discard the permissionHelper service and create a curry like util stack for permissions.
+			Then we can request the data and by the outgoing way we can check the permission with this util.
+			If permission is ok (nearly all request) it remove embedded permission key and post the data outside.
+			-> One request, One DB request, One Outgoing response
+			-> easy generic permission handling
+			-> one scope handling for every business operationen
+
+			But btw we should discuss if we set the scope in before hook, in service, in uc, or in repo.
+			All points has valid arguments.
+
+			https://github.com/hpi-schul-cloud/schulcloud-editor/blob/develop/src/services/sections/section.service.js#L68
+			Line 88
+			Line 101
+		*/
 		this.scopeUc = app.service('scopeUc');
 	}
 
