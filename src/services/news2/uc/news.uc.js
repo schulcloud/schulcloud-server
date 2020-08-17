@@ -1,7 +1,7 @@
 const { newsPermissions } = require('../repo/db/news.schema');
 
-module.exports = class NewsUc {
-	setup(app) {
+class NewsUc {
+	constructor(app) {
 		this.newsRepo = app.service('newsRepo');
 		// 1 Could be also achieved with mixins!
 		this.scopeUc = app.service('scopeUc');
@@ -95,4 +95,16 @@ module.exports = class NewsUc {
 			.then(NewsUc.decorateResults)
 			.then((result) => this.decoratePermissions(result, account.userId));
 	}
+}
+
+let isExpose = false;
+
+module.exports = (app) => {
+	// can also implemented as (helper) class
+	if (isExpose) {
+		throw new Error('Can not expose twice.');
+	}
+	isExpose = true;
+
+	return new NewsUc(app);
 };

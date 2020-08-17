@@ -1,9 +1,44 @@
+const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest } = require('@feathersjs/errors');
 const logger = require('../../../logger');
+const { lookupSchool } = require('../../../hooks');
+const { preparePagination } = require('./news.service.hooks');
 
-module.exports = class NewsRestService {
+// please put this to the services
+const NewsRestServiceHooks = {
+	before: {
+		all: [
+			authenticate('jwt'),
+			lookupSchool,
+		],
+		find: [
+			preparePagination,
+		],
+		get: [],
+		create: [],
+		update: [],
+		patch: [],
+		remove: [],
+	},
+	after: {
+		all: [],
+		find: [],
+		get: [],
+		create: [],
+		update: [],
+		patch: [],
+		remove: [],
+	},
+};
+
+class NewsRestService {
+	constructor(uc) {
+		this.uc = uc;
+	}
+
 	setup(app) {
 		this.newsUc = app.service('newsUc');
+		this.app = app;
 	}
 
 	//
@@ -45,4 +80,9 @@ module.exports = class NewsRestService {
 
 		return { ...results, data };
 	}
+}
+
+module.exports = {
+	NewsRestService,
+	NewsRestServiceHooks,
 };

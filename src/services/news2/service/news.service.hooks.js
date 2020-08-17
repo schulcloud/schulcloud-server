@@ -1,6 +1,3 @@
-const { authenticate } = require('@feathersjs/authentication');
-const { lookupSchool } = require('../../../hooks');
-
 const getBoolean = (value) => value === true || value === 'true';
 
 /**
@@ -17,27 +14,7 @@ const preparePagination = (context) => {
 	return context;
 };
 
-exports.before = {
-	all: [
-		authenticate('jwt'),
-		lookupSchool,
-	],
-	find: [
-		preparePagination,
-	],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
-};
 
-exports.after = {
-	all: [],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
+module.exports = {
+	preparePagination,
 };

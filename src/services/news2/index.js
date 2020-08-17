@@ -1,13 +1,11 @@
 const setupNewsRepo = require('./repo');
-const setupNewsUc = require('./uc');
-const setupNewsSerivce = require('./service');
+const setupNewsUc = require('./uc/news.uc');
+const setupNewsService = require('./service');
 const setupNewsFacade = require('./news.facade');
 
-module.exports = function news2() {
-	const app = this;
-
+module.exports = (app) => {
 	setupNewsRepo(app);
-	setupNewsUc(app);
-	setupNewsFacade(app);
-	setupNewsSerivce(app);
+	const uc = setupNewsUc.configure(app);
+	setupNewsFacade(app, uc);
+	setupNewsService(app, uc);
 };
