@@ -3,6 +3,16 @@ const { paginate, convertToSortOrderObject } = require('../../../utils/array');
 const logger = require('../../../logger');
 const { DocumentNotFound } = require('../../../middleware/errors');
 
+
+// please remove this.newsModelService = app.service('newsModelService'); -> add and improve pagination util
+/*
+	to discuss, why setup as class and not expose with
+	module.exports = { getOneByName, getOneById, findAllByX, patchDateOfNews, createNews }
+	we can also put helper and base handling functions that are wrapped or chain the results
+	and do not expose it over module
+
+	As class we can also "save" this modules by error handling like in uc and put it over constructor in classes
+*/
 /**
  * @typedef {*} NewsSearchParam
  */

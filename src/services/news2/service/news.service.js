@@ -38,7 +38,6 @@ class NewsRestService {
 
 	setup(app) {
 		this.newsUc = app.service('newsUc');
-		this.app = app;
 	}
 
 	//
