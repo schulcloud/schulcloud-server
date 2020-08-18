@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
-### Changed
+## [24.2.1] - 2020-08-018
+### Changed - 24.2.1
+- SC-6122 Load Edusharing Images in parallel; 
+If received image is NO_PERMISSION image try to renew the accessToken and load the image again; 
+Access token and Cookie will be renewed after some time
+Refactoring: Extracting EduSearchResponse, so the empty response can be handled more clearly and stable
 
 ## [24.0.2] - 2020-08-05
 ### Fixed - 24.0.2
