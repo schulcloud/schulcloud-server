@@ -121,6 +121,7 @@ class AdminUsers {
 					.aggregate(createMultiDocumentAggregation(query))
 					.option({
 						collation: { locale: 'de', caseLevel: true },
+						allowDiskUser: true,
 					})
 					.exec((err, res) => {
 						if (err) reject(err);

@@ -286,6 +286,12 @@ const stageSort = (aggregation, sort) => {
 	});
 };
 
+const stageReduce = (aggregation, amount) => {
+	aggregation.push({
+		$limit: amount,
+	});
+};
+
 /**
  *	Convert the output to a feathers-mongoose like format:
  *
@@ -375,6 +381,12 @@ const createMultiDocumentAggregation = ({
 		aggregation.push({
 			$match: match,
 		});
+	}
+
+	// reduce amount of elments to calculate
+	if (!(Object.hasOwnProperty.call(sort, 'classes') || Object.hasOwnProperty.call(this, 'consentStatus'))) {
+		stageSort(aggregation, sort);
+		stageReduce(aggregation, limit);
 	}
 
 	if (select) {
