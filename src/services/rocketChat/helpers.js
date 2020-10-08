@@ -28,9 +28,9 @@ exports.getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
 		};
 	}
 	return {
-		uri: ROCKET_CHAT_URI + shortUri,
-		method: method || 'POST',
-		body,
+		agent: false,
+		uri: shortUri,
+		method: method || 'GET',
 		headers,
 		json: true,
 		timeout: REQUEST_TIMEOUT,

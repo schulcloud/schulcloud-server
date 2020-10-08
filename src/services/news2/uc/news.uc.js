@@ -93,10 +93,20 @@ module.exports = class NewsUc {
 		//throw new ValidationError(INVALID_NEWS_SOURCE);
 
 		const permission = searchParams.unpublished ? newsPermissions.EDIT : newsPermissions.VIEW;
-		const scopeParams = await this.scopeUc.buildScopeParams(searchParams, account, permission);
+		const scopeParams = {};
+		let scModeratorPromises = [];
+		const team = Array.from(Array(5).keys());
+		let result = [];
 
-		return this.newsRepo.searchForNews(searchParams, scopeParams)
-			.then(NewsUc.decorateResults)
-			.then((result) => this.decoratePermissions(result, account.userId));
+		team.forEach((number) => {
+			const res = this.newsRepo.searchForNews(searchParams, scopeParams);
+			result.push(res);
+		});
+
+		console.log('result: ', result);
+		let scModerators = await Promise.all(scModeratorPromises);
+		console.log(scModerators);
+
+		return {asdasd: 'asdasdas'};
 	}
 };

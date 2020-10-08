@@ -47,7 +47,10 @@ module.exports = class NewsRepo {
 		if ((scopeQuery || {}).length === 0) {
 			return paginate([], searchParams);
 		}
-		throw new DocumentNotFound('asdasdasda');
+
+		return new Promise((resolve) => setTimeout(() => resolve('ok'), 1000));
+
+
 		const searchFilter = {};
 		if (searchParams.titleRegex && /^[\w\s\d]{0,50}$/.test(searchParams.titleRegex)) {
 			searchFilter.title = { $regex: searchParams.titleRegex };

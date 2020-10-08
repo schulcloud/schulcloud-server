@@ -1,5 +1,8 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest, GeneralError } = require('@feathersjs/errors');
+const request = require('request-promise-native');
 const logger = require('../../../logger');
+const {getRequestOptions} = require('../../rocketChat/helpers');
+
 
 module.exports = class NewsRestService {
 	setup(app) {
@@ -12,9 +15,18 @@ module.exports = class NewsRestService {
 	async find(params) {
 		// transform request params into application specific param object (if necessary)
 		// i.e. separate application logic from frameworks, transport protocols etc.
+
 		const searchParams = params.query;
 		const { account } = params;
-		return this.newsUc.findNews(searchParams, account).then(this.transformIntoResultTo);
+
+		const teams = Array.from(Array(300).keys());
+		const promises = [];
+		teams.forEach((x) => { promises.push(request(getRequestOptions('http://localhost:6000','',false)))});
+
+		await Promise.all(promises);
+
+
+		return this.newsUc.findNews(searchParams, account);
 	}
 
 	async create(news, params) {
