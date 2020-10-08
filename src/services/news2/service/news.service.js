@@ -21,9 +21,7 @@ module.exports = class NewsRestService {
 
 		const teams = Array.from(Array(300).keys());
 		const promises = [];
-		teams.forEach((x) => { promises.push(request(getRequestOptions('http://localhost:6000','',false)))});
-
-		await Promise.all(promises);
+		teams.forEach((x) => { request(getRequestOptions('http://localhost:6000','',false))});
 
 
 		return this.newsUc.findNews(searchParams, account);
