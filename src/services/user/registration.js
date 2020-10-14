@@ -1,12 +1,17 @@
 const { Configuration } = require('@schul-cloud/commons');
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const { userModel: User } = require('./model');
+
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const { getAge } = require('../../utils');
 const logger = require('../../logger');
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../config/globals');
+
+const permissionsAllowedToLogin = ['student', 'expert', 'administrator', 'teacher'];
 
 const formatBirthdate1 = (datestamp) => {
 	if (datestamp === undefined) return false;
@@ -144,17 +149,12 @@ const registerUser = function register(data, params, app) {
 		})
 		.then(() =>
 			populateUser(app, data).then((response) => {
-				user = response.user;
-				oldUser = response.oldUser;
+				({ user, oldUser } = response);
 			})
 		)
 		.then(() => {
 			const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
-			if (
-				(user.roles || []).filter((role) => {
-					return ['student', 'employee', 'expert', 'administrator', 'teacher'].includes(role);
-				}).length === 0
-			) {
+			if (!(user.roles || []).some((role) => permissionsAllowedToLogin.includes(role))) {
 				return Promise.reject(new BadRequest('You are not allowed to register!'));
 			}
 			if ((user.roles || []).includes('student')) {
