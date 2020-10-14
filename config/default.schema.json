@@ -361,6 +361,28 @@
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
 		},
+		"ES_ANTARES_API_URL": {
+			"type": "string",
+			"description": "Connection url for Antares content",
+			"default": "https://arix.datenbank-bildungsmedien.net"
+		},
+		"FEATURE_ES_ANTARES_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "When enabled, the Antares reference will generate a valid url"
+		},
+		"SECRET_ES_ANTARES_NOTCH": {
+			"type": "string",
+			"description": "The password for Antares login, used for edusharing"
+		},
+		"SECRET_ES_ANTARES_PROXY_PW": {
+			"type": "string",
+			"description": "The password for Antares login, used for edusharing"
+		},
+		"SECRET_ES_ANTARES_PROXY_USERNAME": {
+			"type": "string",
+			"description": "The password for Antares login, used for edusharing"
+		},
 		"SECRET_ES_MERLIN_USERNAME": {
 			"type": "string",
 			"description": "The username for Merlin login, used for edusharing"

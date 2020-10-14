@@ -12,8 +12,10 @@ const NO_PERMISSIONS_IMG = '/edu-sharing/themes/default/images/common/mime-types
 
 const ES_PATH = {
 	AUTH: '/edu-sharing/rest/authentication/v1/validateSession',
-	NODE: '/edu-sharing/rest/node/v1/nodes/mv-repo.schul-cloud.org/',
-	SEARCH: '/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/',
+	//NODE: '/edu-sharing/rest/node/v1/nodes/mv-repo.schul-cloud.org/',
+	NODE: '/edu-sharing/rest/node/v1/nodes/-home-/',
+	//SEARCH: '/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/',
+	SEARCH: '/edu-sharing/rest/search/v1/queriesV2/-home-/mds_oeh/ngsearch/',
 	TOKEN: '/edu-sharing/oauth2/token',
 };
 
