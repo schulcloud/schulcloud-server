@@ -17,6 +17,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7083 - Added officialSchoolNumber to school-model
 - Introduce plainSecrets in Configuration
 - Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
+- SC-6596 - Added school option to allow students to create chat rooms
 
 ### Changed
 
