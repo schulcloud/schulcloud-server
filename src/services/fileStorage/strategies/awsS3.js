@@ -540,8 +540,12 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					Bucket: bucket,
 					CopySource: `/${bucket}/${fileId}`,
 					Key: `expiring_${fileId}`,
+					MetadataDirective: 'REPLACE',
+					Metadata: {
+						expires: true,
+					}
 				};
-				return promisify(s3.copyObject, s3)(copyParams);
+				return s3.copyObject(copyParams).promise();
 			})
 		);
 
@@ -550,11 +554,11 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			Bucket: bucket,
 			Delete: {
 				Objects: fileIds.map((fileId) => ({
-					key: fileId,
+					Key: fileId,
 				})),
 			},
 		};
-		promisify(s3.deleteObjects, s3)(deleteParams);
+		await s3.deleteObjects(deleteParams).promise();
 	}
 }
 

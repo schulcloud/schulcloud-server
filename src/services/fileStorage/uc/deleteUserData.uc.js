@@ -5,9 +5,14 @@ const { Unprocessable } = reqlib('src/errors');
 const { BadRequest } = require('../../activation/utils/generalUtils');
 const repo = require('../repo/files.repo');
 
+// Todo: delete
+const { userModel } = require('../../user/model');
+
 const isUserPermission = (userId) => (p) => p.refId.toString() === userId.toString() && p.refPermModel === 'user';
 
 const extractIds = (result = []) => result.map(({ _id }) => _id);
+
+const extractStorageIds = (result = []) => result.map(({ storageFileName }) => storageFileName);
 
 const handleIncompleteDeleteOperations = async (resultStatus, context, dbFindOperation) => {
 	if (resultStatus.ok !== 1 || resultStatus.deletedCount < resultStatus.n) {
@@ -53,7 +58,11 @@ const deletePersonalFiles = async (context) => {
 	try {
 		const { userId } = context;
 		const files = await repo.findPersonalFiles(userId);
-		await repo.moveFilesToTrash(extractIds(files));
+
+		// Todo: Use user repo
+		const user = await userModel.findById(userId).exec();
+
+		await repo.moveFilesToTrash(extractStorageIds(files), user.schoolId);
 
 		const resultStatus = await repo.deleteFilesByIDs(extractIds(files));
 		resultStatus.type = 'deleted';
