@@ -53,6 +53,7 @@ const deletePersonalFiles = async (context) => {
 	try {
 		const { userId } = context;
 		const files = await repo.findPersonalFiles(userId);
+		await repo.moveFilesToTrash(extractIds(files));
 
 		const resultStatus = await repo.deleteFilesByIDs(extractIds(files));
 		resultStatus.type = 'deleted';
@@ -67,7 +68,7 @@ const deletePersonalFiles = async (context) => {
 /*
 const replaceUserId = async (userId) => {
 	// get UserId
-	// search school tombstone 
+	// search school tombstone
 	// owner
 	// creator
 	// permissions

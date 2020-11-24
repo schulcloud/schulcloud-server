@@ -529,6 +529,33 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				return Promise.resolve(deletionData);
 			});
 	}
+
+	async moveFilesToTrash(schoolId, fileIds) {
+		// TODO error handling
+		const { s3, bucket } = await createAWSObject(schoolId);
+		// TODO split into x copy operations at once
+		await Promise.all(
+			fileIds.map((fileId) => {
+				const copyParams = {
+					Bucket: bucket,
+					CopySource: `/${bucket}/${fileId}`,
+					Key: `expiring_${fileId}`,
+				};
+				return promisify(s3.copyObject, s3)(copyParams);
+			})
+		);
+
+		// TODO deleteObjects takes max 1000 entries
+		const deleteParams = {
+			Bucket: bucket,
+			Delete: {
+				Objects: fileIds.map((fileId) => ({
+					key: fileId,
+				})),
+			},
+		};
+		promisify(s3.deleteObjects, s3)(deleteParams);
+	}
 }
 
 module.exports = AWSS3Strategy;

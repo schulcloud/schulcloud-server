@@ -60,9 +60,15 @@ const removeFilePermissionsByUserId = async (fileIds = [], userId) => {
 	return lengthValidation(result, fileIds);
 };
 
+const moveFilesToTrash = (storageStrategy, schoolId) => {
+	// TODO
+	storageStrategy.moveFilesToTrash(schoolId);
+};
+
 module.exports = {
 	findFilesThatUserCanAccess,
 	deleteFilesByIDs,
 	findPersonalFiles,
 	removeFilePermissionsByUserId,
+	moveFilesToTrash,
 };
