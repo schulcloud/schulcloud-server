@@ -9,38 +9,12 @@ const ENVIRONMENTS = {
 
 const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
 
-let defaultLogLevel = null;
-switch (NODE_ENV) {
-	case ENVIRONMENTS.PRODUCTION:
-		defaultLogLevel = 'error'; // level 3
-		break;
-	case ENVIRONMENTS.TEST:
-		defaultLogLevel = 'emerg'; // level 0
-		break;
-	case ENVIRONMENTS.DEVELOPMENT:
-	case ENVIRONMENTS.MIGRATION:
-	default:
-		defaultLogLevel = 'debug'; // level 7
-}
-
 const globals = {
-	KEEP_ALIVE: process.env.KEEP_ALIVE || false,
-	LEAD_TIME: process.env.LEAD_TIME ? parseInt(process.env.LEAD_TIME, 10) : undefined,
 	/**
 	 * default value 'development' matches default of app.get('env'), but use globals
 	 */
 	NODE_ENV,
 	ENVIRONMENTS,
-	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
-	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
-	// secrets smtp
-
-	// secrets aws
-	AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
-	AWS_SECRET_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
-	AWS_REGION: process.env.AWS_REGION || 'eu-de',
-	AWS_ENDPOINT_URL: process.env.AWS_ENDPOINT_URL,
-	AUTHENTICATION: process.env.AUTHENTICATION,
 	//
 	DISPLAY_REQUEST_LEVEL: Number(process.env.DISPLAY_REQUEST_LEVEL || 0),
 	ANALYTICS_LOGGING: process.env.ANALYTICS_LOGGING,

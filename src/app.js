@@ -11,8 +11,6 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const { LEAD_TIME } = require('../config/globals');
-
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
 const sockets = require('./sockets');
@@ -38,7 +36,7 @@ const setupApp = async () => {
 	const config = configuration();
 	app.configure(config);
 
-	if (LEAD_TIME) {
+	if (Configuration.has('LEAD_TIME')) {
 		app.use((req, res, next) => {
 			req.leadTime = Date.now();
 			next();

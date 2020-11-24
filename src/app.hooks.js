@@ -10,7 +10,6 @@ const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
 const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
-const { LEAD_TIME } = require('../config/globals');
 
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
@@ -113,7 +112,7 @@ const errorHandler = (context) => {
 const leadTimeDetection = (context) => {
 	if (context.params.leadTime) {
 		const timeDelta = Date.now() - context.params.leadTime;
-		if (timeDelta >= LEAD_TIME) {
+		if (timeDelta >= Configuration.get('LEAD_TIME')) {
 			const {
 				path,
 				id,
@@ -180,7 +179,7 @@ function setupAppHooks(app) {
 	if (app.get('DISPLAY_REQUEST_LEVEL') > 1) {
 		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
 	}
-	if (LEAD_TIME) {
+	if (Configuration.has('LEAD_TIME')) {
 		['find', 'get', 'create', 'update', 'patch', 'remove'].forEach((m) => {
 			if (Array.isArray(after[m])) {
 				after[m].push(leadTimeDetection);

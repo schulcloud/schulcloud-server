@@ -575,6 +575,47 @@
 			"type": "number",
 			"default": "587",
 			"description": "Base URL-PORT for SMTP Server"
+		},
+		"KEEP_ALIVE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Set the keep alive header for proxy service."
+		},
+		"LEAD_TIME": {
+			"type": "number",
+			"description": "Set the lead time for hooks."
+		},
+		"LOG_LEVEL": {
+			"type": "string",
+			"default": "debug",
+			"description": "Set the log level for logger. Log-Level default: (production=error/level 3 // test=emerg/level 0 // develop&migartion=debug/level 7)"
+		},
+		"SYSTEM_LOG_LEVEL": {
+			"type": "string",
+			"default": "sendRequests",
+			"description": "System log level for winston."
+		},
+		"AWS_ACCESS_KEY": {
+			"type": "string",
+			"description": "Access Key (Secred) for Amazon AWS."
+		},
+		"AWS_SECRET_ACCESS_KEY": {
+			"type": "string",
+			"description": "Access Key (Secred) for Amazon AWS."
+		},
+		"AWS_REGION": {
+			"type": "string",
+			"default": "eu-de",
+			"description": "Region for AWS. Where is the used cluster?"
+		},
+		"AWS_ENDPOINT_URL": {
+			"type": "string",
+			"format": "uri",
+			"description": "URL for AWS connection."
+		},
+		"AUTHENTICATION": {
+			"type": "string",
+			"description": "Auth for AWS?."
 		}
 	},
 	"required": [

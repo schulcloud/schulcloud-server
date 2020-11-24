@@ -46,5 +46,9 @@
 	"MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE": 5242880,
 	"MONGOOSE_CONNECTION_POOL_SIZE": 50,
 	"SMTP_SENDER": "noreply@schul-cloud.org",
-	"SMTP_PORT": "587"
+	"SMTP_PORT": "587",
+	"KEEP_ALIVE": false,
+	"LOG_LEVEL": "debug",
+	"SYSTEM_LOG_LEVEL": "sendRequests",
+	"AWS_REGION": "eu-de"
 }

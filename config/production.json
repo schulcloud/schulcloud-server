@@ -18,5 +18,7 @@
 		"TITLE": "HPI Schul-Cloud",
 		"THEME": "default",
 		"SHORT_TITLE": "HPI Schul-Cloud"
-	}
+	},
+	"KEEP_ALIVE": true,
+	"LOG_LEVEL": "error"
 }
