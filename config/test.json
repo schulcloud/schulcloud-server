@@ -19,5 +19,8 @@
 		"SHORT_TITLE": "HPI Schul-Cloud"
 	},
 	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud-test",
-	"LOG_LEVEL": "emerg"
+	"LOG_LEVEL": "emerg",
+	"DB_USERNAME": "",
+	"DB_PASSWORD": "",
+	"LERNSTORE_MODE": "EDUSHARING"
 }
