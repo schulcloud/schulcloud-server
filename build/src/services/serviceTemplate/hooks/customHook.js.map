@@ -1,0 +1,1 @@
+{"version":3,"file":"customHook.js","sourceRoot":"","sources":["../../../../../src/services/serviceTemplate/hooks/customHook.js"],"names":[],"mappings":"AAAA,iDAAiD;AAEjD;;;GAGG;AACH,MAAM,CAAC,OAAO,GAAG,CAAC,OAAO,EAAE,EAAE;IAC5B,wBAAwB;IACxB,IAAI,OAAO,CAAC,IAAI,CAAC,WAAW,EAAE;QAC7B,OAAO,CAAC,IAAI,CAAC,WAAW,IAAI,CAAC,CAAC;KAC9B;IACD,OAAO,OAAO,CAAC;AAChB,CAAC,CAAC"}

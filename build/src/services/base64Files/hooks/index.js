@@ -1,0 +1,31 @@
+const reqlib = require('app-root-path').require;
+const { BadRequest } = reqlib('src/errors');
+const { disallow, iff, isProvider } = require('feathers-hooks-common');
+const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+const isBase64 = async (context) => {
+    const { data } = context.data;
+    if (!data && base64regex.test(data)) {
+        throw new BadRequest('The key "data" is not base64 encoded.');
+    }
+    return context;
+};
+// the base64Files service is only used for School Datasecurity documents which need to be publicly available
+exports.before = {
+    all: [],
+    find: [iff(isProvider('external'), disallow())],
+    get: [],
+    create: [iff(isProvider('external'), disallow()), isBase64],
+    update: [disallow()],
+    patch: [iff(isProvider('external'), disallow()), isBase64],
+    remove: [iff(isProvider('external'), disallow())],
+};
+exports.after = {
+    all: [],
+    find: [],
+    get: [],
+    create: [],
+    update: [],
+    patch: [],
+    remove: [],
+};
+//# sourceMappingURL=index.js.map

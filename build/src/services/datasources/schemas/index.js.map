@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../../src/services/datasources/schemas/index.js"],"names":[],"mappings":"AAAA,MAAM,uBAAuB,GAAG,OAAO,CAAC,6BAA6B,CAAC,CAAC;AACvE,MAAM,sBAAsB,GAAG,OAAO,CAAC,4BAA4B,CAAC,CAAC;AACrE,MAAM,yBAAyB,GAAG,OAAO,CAAC,gCAAgC,CAAC,CAAC;AAE5E,MAAM,CAAC,OAAO,GAAG,EAAE,yBAAyB,EAAE,sBAAsB,EAAE,uBAAuB,EAAE,CAAC"}
