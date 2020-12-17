@@ -3,7 +3,7 @@ const url = require('url');
 const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
 const { v4: uuidv4 } = require('uuid');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const accountModel = require('../../../account/model');
 
 const ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
@@ -64,14 +64,8 @@ const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
 const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 	const username = getUsername(userOptions);
 	const email = getEmail(userOptions);
-	const { pin } = await app.service('registrationPins').create({
-		email,
-		verified: true,
-		silent: true,
-	});
 	const user = await app.service('users').create({
 		...userOptions,
-		pin,
 		email,
 		roles,
 	});

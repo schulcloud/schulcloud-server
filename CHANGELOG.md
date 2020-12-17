@@ -7,10 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## [Unreleased]
+## Unreleased
 
 ### Added
 
+- SC-8229 - Added invalid DN error to ldap-config service error handling
+- SC-7825 - Remove user relations from courses
+- SC-7827 - Add deletion concept handling for file permissions.
+- SC-8030 - Setup orchestrator for deleting concept
+- SC-8060 - increase unit test coverage for lernstore counties
+- SC-8179 - repaired unit test
+- SC-7763 - adds searchable feature flag for lernstore 
+- SC-8020 - adds collections filter to edu-sharing service
+
+## [25.3.5]
+
+### Changed
+
+- SC-8149 - no longer require a registrationPin for internal calls
+
+## [25.3.4]
+
+### Changed
+
+- SC-7998 - use default service setup for /version
+
+## [25.3.3] (pick from 25.2)
+
+### Removed
+
+- SC-8101 - Sanitization for read operations
+
+### Fixed
+
+- SC-8101 - Make it possible to disable sentry by removing `SENTRY_DSN`
+- OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
+  properly closing the session, and using the correct readPreference (everything except primary fails)
+
+## [25.3.2]
+
+### Added
+
+- SC-7734 - Added a hook that takes care of merlin content to generate valid urls for users
+- SC-7483 - Updating terms of use for all users for each instance separately
+
+## [25.3.1]
+
+### Fixed
+
+SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-parent-users is broken
+
+## [25.3.0]
+
+### Added
+
+- SC-7841 - remove deleted user from classes
+- SC-7836 - Removing registration pin by removing the user
+- SC-7838 - move pseudonyms to trashbin
+- SC-7142 - Counties/Kreise added to federal states.
+- SC-7555 - move user and account to trashbin
+- SC-4666 - Added a pool based LDAP system and school sync. LDAP_SYSTEM_SYNCER_POOL_SIZE and LDAP_SCHOOL_SYNCER_POOL_SIZE variables
+  determine how many system/school syncers will be run in parallel (at most) during the LDAP sync.
 - SC-7615 - reduces the errors in lernstore
 - SC-5476 - Extend tests for Matrix messenger config and permission service
 - SC-6690 - refactors edu-sharing service and sets defaults
@@ -25,10 +82,23 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7205 - create new data seed for QA
 - SC-7614 - creates documentation for edu sharing endpoints
 - SC-7370 - Add optional rootPath attribute modifier to iserv-idm strategy
+- SC-4667 - persist time of last attempted and last successful LDAP sync to database (based on system)
+- SC-4667 - Only request and compare LDAP entities that have changed since the last sync (using operational attribute modifyTimestamp with fallback)
+- SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
+- SC-7915 - facade locator
+- SC-7571 - solved performance issues - bulk QR-code generation
+- SC-6294 - Introduce Typescript in schulcloud-server
+- SC-7543 - Adds ldap-config service to create, load, and patch LDAP-configs (replaces /ldap endpoints for new client)
+- SC-7028 - Add Course Component API Specification document
+- SC-7476 - Prevent hash generation if user has account
+- SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
 
 ### Changed
 
+- request logging disabled for non development environment
+- OPS-1289 - moved and updated commons (to hpi-schul-cloud/commons)
+- SC-6596 - Changed route for messenger permissions service
 - SC-7331 - introduce axios for external requests, implemented in status api
 - SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
 - SC-6080 - move REQUEST_TIMEOUT from globals to Configuration
@@ -39,9 +109,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7411 - api versioning for /version service
 - IMP-160 - integration-tests repo renamed to end-to-end-tests
 - SC-5900 - Move Synapse synchronization logic into server
+- SC-7499 - Fixes documentation for edu sharing endpoints
+- SC-7872 - Fix audience of the jwt to new organisation name.
+- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes
+- SC-7868 - Move external request helpers to more present file location
+- SC-7474 pull docker container for tests if commit id exists on docker hub
 
 ### Fixed
 
+- SC-6294 fix mocha test execution and build, summarize coverage results
+- SC-1589 Trim strings to avoid empty team names
+- ARC-138 fix changelog action
+- ARC-137 avoid DoS on alerts in error state
 - SC-7353 course sharing between teachers
 - SC-7530 rename SHOW_VERSION to FEATURE_SHOW_VERSION_ENABLED
 - SC-7517 improve oauth test stability
@@ -53,10 +132,54 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed paths to openapi documentation
 - Fixed searching for names including a dash
 - SC-7572 - Find /users route after hooks - extremely slow
+- SC-7573 - Route/hash-broken promise chain
+- SC-7884 - Authentication error when accessing any nuxt page in the client.
+- Fix typescript compiling error
 
 ### Removed
 
 - SC-7413 - Cleanup UnhandledRejection code that is handled from winston now
+
+## [25.2.6]
+
+### Removed
+
+- SC-8101 - Sanitization for read operations
+
+### Fixed
+
+- SC-8101 - Make it possible to disable sentry by removing `SENTRY_DSN`
+
+## [25.2.5]
+
+### Fixed
+
+- OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
+  properly closing the session, and using the correct readPreference (everything except primary fails)
+
+## [25.2.4]
+
+### Changed
+
+- SC-6727 - Change email addresses for tickets for Niedersachsen - fixed after review
+
+## [25.2.3]
+
+### Changed
+
+- SC-6727 - Change email addresses for tickets for Niedersachsen
+
+## [25.2.2]
+
+### Changed
+
+- SC-7773 - moved config values for antivirus file service
+
+## [25.2.1]
+
+### Fixed
+
+- SC-7714 - Fixes script injection issue
 
 ## [25.2.0]
 
@@ -85,7 +208,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6510, fix a minor syntax error when exporting module
 - Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - Support asynchronous calls during server startup
-- SC-7091 Migration to enable the Matrix Messenger for all schools that had RocketChat enabled before
+- SC-7091 - Migration to enable the Matrix Messenger for all schools that had RocketChat enabled before
 
 ### Fixed
 
