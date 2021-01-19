@@ -9,6 +9,39 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.4]
+
+### Added
+
+- SC-8358 - bettermarks: show hint for safari users
+- SC-8412 - update swagger documentation of pseudonym/roster/ltitools
+
+### Fixed
+
+- SC-5287 - Fixed OAuth2 rostering
+- SC-5287 - Repair Bettermark's depseudonymization
+- SC-8313 - Bettermarks: depseudonymization iframe needs to use Storage Access API in Safari
+- SC-8379 - Secure ltiTools route
+- SC-8315 - bettermarks: security check and production configuration
+
+## [25.5.3]
+
+### Added
+
+- SC-8420 - Migration for sync new indexes.
+
+## [25.5.2]
+
+### Fixed
+
+- SC-8189 - fix duplicate events by returning updated object at findOneAndUpdate
+
+## [25.5.1]
+
+### Fixed
+
+- SC-8303 - fix wrong assignment from school to storage provider
+
 ## [25.5.0]
 
 ### Added
@@ -30,6 +63,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - SC-8329 - Cluster returns old verison of Pin object after patch
+
+## [25.4.1]
+
+- Update from 25.3.9 into master
+  > > > > > > > master
 
 ## [25.4.1]
 
