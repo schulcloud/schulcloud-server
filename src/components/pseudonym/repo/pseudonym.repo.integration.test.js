@@ -88,4 +88,24 @@ describe('pseudonym repo', () => {
 			expect(pseudonymRepo.getPseudonymsForUser('INVALID_USER_ID')).to.eventually.be.rejectedWith(ValidationError);
 		});
 	});
+
+	describe.only('createPseudonym', () => {
+		it('when the function is called with userId and toolId, it should return an encrypted hash', async () => {
+			const userId = testObjects.generateObjectId();
+			const toolId = testObjects.generateObjectId();
+			const pseudonym = await pseudonymRepo.createPseudonym(userId, toolId);
+			expect(pseudonym).not.to.be.empty;
+		});
+	});
+
+	describe.only('getPseudonymData', () => {
+		it('when the function is called with pseudonym, it should return userId and toolId', async () => {
+			const originalUserId = testObjects.generateObjectId();
+			const originalToolId = testObjects.generateObjectId();
+			const pseudonym = await pseudonymRepo.createPseudonym(originalUserId, originalToolId);
+			const { userId, toolId } = await pseudonymRepo.getPseudonymData(pseudonym);
+			expect(userId).to.eql(originalUserId.toString());
+			expect(toolId).to.eql(originalToolId.toString());
+		});
+	});
 });
