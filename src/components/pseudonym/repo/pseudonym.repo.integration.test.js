@@ -89,7 +89,7 @@ describe('pseudonym repo', () => {
 		});
 	});
 
-	describe.only('createPseudonym', () => {
+	describe('createPseudonym', () => {
 		it('when the function is called with userId and toolId, it should return an encrypted hash', async () => {
 			const userId = testObjects.generateObjectId();
 			const toolId = testObjects.generateObjectId();
@@ -98,7 +98,7 @@ describe('pseudonym repo', () => {
 		});
 	});
 
-	describe.only('getPseudonymData', () => {
+	describe('getPseudonymData', () => {
 		it('when the function is called with pseudonym, it should return userId and toolId', async () => {
 			const originalUserId = testObjects.generateObjectId();
 			const originalToolId = testObjects.generateObjectId();

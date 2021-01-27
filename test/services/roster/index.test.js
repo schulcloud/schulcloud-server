@@ -4,10 +4,9 @@ const chaiHttp = require('chai-http');
 
 const appPromise = require('../../../src/app');
 
-
 chai.use(chaiHttp);
 
-describe('roster service', function oauth() {
+describe.only('roster service', function oauth() {
 	let app;
 	let metadataService;
 	let userGroupsService;
@@ -69,13 +68,7 @@ describe('roster service', function oauth() {
 		return Promise.resolve();
 	});
 
-	after(() =>
-		Promise.all([
-			pseudonymService.remove(null, { query: {} }),
-			toolService.remove(testTool1),
-			courseService.remove(testCourse._id),
-		]).then(server.close())
-	);
+	after(() => Promise.all([toolService.remove(testTool1), courseService.remove(testCourse._id)]).then(server.close()));
 
 	it('is registered', () => {
 		assert.ok(metadataService);

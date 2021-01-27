@@ -24,33 +24,6 @@ const replaceToolWithOrigin = (hook) => {
 };
 
 /**
- * looks for user and tool combinations that aren't existing, creates them and adds them into result.data
- */
-const createMissingPseudonyms = (context) => {
-	// prevent pseudonym creation when only pseudonym is given
-	if (!context.params.query.toolId || !context.params.query.userId) return context;
-	const toolIds = toArray(context.params.query.toolId);
-	const userIds = toArray(context.params.query.userId);
-	const missingPseudonyms = [];
-	for (const userId of userIds) {
-		for (const toolId of toolIds) {
-			if (!context.result.data.find((entry) => equalIds(entry.userId, userId) && equalIds(entry.toolId, toolId))) {
-				// collect missing pseudonyms for user and tool
-				missingPseudonyms.push({ userId, toolId });
-			}
-		}
-	}
-	if (!missingPseudonyms.length) return context;
-	return context.app
-		.service('pseudonym')
-		.create(missingPseudonyms)
-		.then((results) => {
-			context.result.data = context.result.data.concat(results);
-			return context;
-		});
-};
-
-/**
  * restricts the returned pseudonyms to the users the authenticated user shares a course with
  */
 const filterPseudonyms = (context) => {
@@ -85,7 +58,7 @@ const haveExacltyOneResult = (data) => data && data.length === 1 && data[0].user
  * @param {*} context
  */
 const populateUsername = (context) => {
-	if (!haveExacltyOneResult(context.result.data)) {
+	if (!haveExacltyOneResult(context.result)) {
 		return context;
 	}
 	// expect pseudonym given and having one result given
@@ -147,7 +120,7 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [createMissingPseudonyms, globalHooks.ifNotLocal(filterPseudonyms), populateUsername],
+	find: [globalHooks.ifNotLocal(filterPseudonyms), populateUsername],
 	get: [],
 	create: [],
 	update: [],
