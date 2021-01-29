@@ -11,18 +11,76 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-8514 - QR Code generation fails
 - SC-8390 - Lern-Store collections feature flag was not excluding collections in search
 - SC-8322 prevent wrong assignment from school to storage provider
 
 ### Added
 
+- SC-8482 - Deletion concept orchestration integration
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
+- SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
+- SC-8206 - Add school tombstone for deleting concept
 
 ### Changed
 
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
+- SC-8300 Added user information to LDAP Sync in case of errors
+
+## [25.5.13]
+
+### Changed
+
+- SC-8462 - Add logging for homework deletion
+
+## [25.5.12]
+
+### Fixed
+
+- SC-8499 - Change order of migrations
+
+## [25.5.11]
+
+### Fixed
+
+- SC-8499 - Prevent duplicated pseudonyms
+
+## [25.5.10]
+
+- SC-8506 - add origin server name to bbb create and join requests
+
+## [25.5.9]
+
+### Fixed
+
+- SC-8503 - Clicking on task in BRB and THR shows pencil page
+
+## [25.5.8]
+
+### Changed
+
+- SC-8480 - Return GeneralError if unknown error code is given to error pipeline
+
+## [25.5.7]
+
+## Added
+
+- SC-8489 - Added permission check for homework deletion
+
+## [25.5.6]
+
+### Fixed
+
+- SC-8410 - Verify ldap connection reads the first page of users only to avoid timeouts
+- SC-8444 - resolve eventual consistency in course shareToken generation
+
+## [25.5.5]
+
+### Fixed
+
+- SC-8303 - fix wrong assignment from school to storage provider
 
 ## [25.5.4]
 
