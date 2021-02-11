@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const errorHandlers = require('./errors');
 
-const { Forbidden } = require('../../errors');
+const { Forbidden, ValidationError } = require('../../errors');
 
 class LdapConfigService {
 	setup(app) {
@@ -150,11 +150,20 @@ class LdapConfigService {
 					result.errors.push({ message: message(error), type });
 				}
 			}
-			if (result.errors.length === 0) {
-				// Something unexpected happened, so let's push it to the logs and
-				// tell the client that this was not planned
-				throw error;
-			}
+			const errorTmp = new ValidationError(
+				{
+					type: 'LDAP_CONNECTION_ERROR',
+					title: 'Connection to LDAP',
+					defaultMessage: 'Connection to the LDAP server failed',
+				},
+				result.errors
+			);
+			throw errorTmp;
+			// if (result.errors.length === 0) {
+			// 	// Something unexpected happened, so let's push it to the logs and
+			// 	// tell the client that this was not planned
+			// 	throw error;
+			// }
 		} finally {
 			ldap.disconnect(config);
 		}
