@@ -16,7 +16,7 @@ const filterRequestedSubmissions = async (context) => {
 	// user is team member and the homework is not private
 	const homeworkService = context.app.service('/homework');
 	const subquery = {
-		$and: [{ teamMembers: { $in: currentUserId } }, { studentId: { $ne: currentUserId } }],
+		$and: [{ teamMembers: currentUserId }, { studentId: { $ne: currentUserId } }],
 	};
 	const subqueryResult = await submissionModel.find(subquery).exec();
 	const teamMeberSubmissions = subqueryResult.map((s) => s._id);
@@ -38,7 +38,7 @@ const filterRequestedSubmissions = async (context) => {
 		const courseGroupService = context.app.service('/courseGroups');
 		const courseGroup = await courseGroupService.find({
 			query: {
-				userIds: { $in: [currentUserId] },
+				userIds: currentUserId,
 			},
 		});
 		const courseGroupIds = courseGroup.data.map((c) => c._id);
@@ -65,7 +65,7 @@ const filterRequestedSubmissions = async (context) => {
 	try {
 		const enrolledCourses = await courseService.find({
 			query: {
-				userIds: { $in: [currentUserId] },
+				userIds: currentUserId,
 			},
 		});
 		const enrolledCourseIds = enrolledCourses.data.map((c) => c._id);
